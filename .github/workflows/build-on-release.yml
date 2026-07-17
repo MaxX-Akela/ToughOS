@@ -30,12 +30,16 @@ jobs:
         copy_repository_path: /home/pi/companion
         commands: |
           systemctl disable userconfig
+          systemctl enable ssh
+          systemctl start ssh
+
           if ! id -u pi >/dev/null 2>&1; then
               useradd -m -s /bin/bash pi
               echo "pi:raspberry" | chpasswd
               usermod -aG sudo,video,plugdev pi
               echo "pi ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/010_pi-nopasswd
           fi
+
           apt-get update
           apt-get install -y \
             python3-pip \
@@ -50,9 +54,10 @@ jobs:
             gstreamer1.0-tools \
             v4l-utils \
             screen \
-            iw
+            iw \
+            i2c-tools
 
-          pip3 install tornado pyserial pymavlink MAVProxy netifaces pywifi
+          pip3 install tornado pyserial pymavlink MAVProxy netifaces pywifi brping
 
           echo "" >> /etc/dhcpcd.conf
           echo "interface eth0" >> /etc/dhcpcd.conf
