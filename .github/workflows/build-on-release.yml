@@ -52,8 +52,8 @@ jobs:
             screen \
             iw
 
-          pip3 install tornado pyserial pymavlink MAVProxy netifaces pywifi
-
+          pip3 install tornado pyserial pymavlink MAVProxy netifaces pywifi brping requests flask numpy
+          
           echo "" >> /etc/dhcpcd.conf
           echo "interface eth0" >> /etc/dhcpcd.conf
           echo "static ip_address=192.168.2.2/24" >> /etc/dhcpcd.conf
