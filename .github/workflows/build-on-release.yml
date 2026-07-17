@@ -35,7 +35,6 @@ jobs:
               usermod -aG sudo,video,plugdev pi
               echo "pi ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/010_pi-nopasswd
           fi
-
           apt-get update
           apt-get install -y \
             python3-pip \
@@ -52,7 +51,7 @@ jobs:
             screen \
             iw
 
-          pip3 install --break-system-packages tornado pyserial pymavlink MAVProxy netifaces pywifi
+          pip3 install tornado pyserial pymavlink MAVProxy netifaces pywifi
 
           echo "" >> /etc/dhcpcd.conf
           echo "interface eth0" >> /etc/dhcpcd.conf
