@@ -26,7 +26,7 @@ jobs:
       run: |
         wget -O pi_os.xz https://downloads.raspberrypi.com/raspios_lite_armhf/images/raspios_lite_armhf-2023-05-03/2023-05-03-raspios-bullseye-armhf-lite.img.xz
         xz -d pi_os.xz
-        mv 2023-05-03-raspios-bullseye-armhf-lite.img companion-rpi4.img
+        mv pi_os companion-rpi4.img
 
     - name: Customize Image via QEMU (Manual Bootstrap)
       uses: pguyot/arm-runner-action@v2
@@ -67,8 +67,7 @@ jobs:
 
           chmod +x /etc/rc.local
           if ! grep -q "companion.rc" /etc/rc.local; then
-              # Вставляем запуск .companion.rc перед exit 0
-              sed -i "s|^exit 0|# Start Companion Services\n. /home/pi/companion/.companion.rc\n\nexit 0|" /etc/rc.local
+              sed -i "s|^exit 0|. /home/pi/companion/.companion.rc\n\nexit 0|" /etc/rc.local
           fi
 
           echo "enable_uart=1" >> /boot/config.txt
