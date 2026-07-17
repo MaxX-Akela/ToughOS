@@ -13,49 +13,36 @@ else
     DEVICE=$4
 fi
 
-echo "start video with width $WIDTH height $HEIGHT framerate $FRAMERATE device $DEVICE"
+echo "=== Starting video with width $WIDTH height $HEIGHT framerate $FRAMERATE device $DEVICE ==="
 
-# Load Pi camera v4l2 driver
-if ! lsmod | grep -q bcm2835_v4l2; then
-    echo "loading bcm2835 v4l2 module"
-    sudo modprobe bcm2835-v4l2
+IS_H264_USB=false
+gst-launch-1.0 -v v4l2src device=$DEVICE do-timestamp=true num-buffers=1 ! video/x-h264 ! fakesink &>/dev/null
+if [ $? -eq 0 ]; then
+    IS_H264_USB=true
+    echo "Detected native H264 USB camera."
 fi
 
-# check if this device is H264 capable before streaming
-# It would be better not to specify framerate, but there is an issue with RPi camera v4l2 driver, it will cause kernel error to use default framerate (90 fps)
-gst-launch-1.0 -v v4l2src device=$DEVICE do-timestamp=true num-buffers=1 ! video/x-h264 ! h264parse ! queue ! rtph264pay config-interval=10 pt=96 ! fakesink
-
-# if it is not, check all available devices, and use the first h264 capable one instead
-if [ $? != 0 ]; then
-    echo "specified device $DEVICE failed"
-    for DEVICE in $(ls /dev/video*); do
-        echo "attempting to start $DEVICE"
-        gst-launch-1.0 -v v4l2src device=$DEVICE do-timestamp=true num-buffers=1 ! video/x-h264 ! h264parse ! queue ! rtph264pay config-interval=10 pt=96 ! fakesink
-        if [ $? == 0 ]; then
-            echo "Success!"
-            break
-        fi
-    done
+USE_LIBCAMERA=false
+if [ "$IS_H264_USB" = "false" ]; then
+    gst-launch-1.0 libcamerasrc num-buffers=1 ! fakesink &>/dev/null
+    if [ $? -eq 0 ]; then
+        USE_LIBCAMERA=true
+        echo "Detected Raspberry Pi CSI Camera via libcamerasrc."
+    fi
 fi
 
-# load gstreamer options
 gstOptions=$(tr '\n' ' ' < $HOME/gstreamer2.param)
 
-# make sure framesize and framerate are supported
-
-# workaround to make sure we don't attempt 1080p@90fps on pi camera
-v4l2-ctl --device $DEVICE --set-parm $FRAMERATE
-
-echo "attempting device $DEVICE with width $WIDTH height $HEIGHT framerate $FRAMERATE options $gstOptions"
-gst-launch-1.0 -v v4l2src device=$DEVICE do-timestamp=true num-buffers=1 ! video/x-h264, width=$WIDTH, height=$HEIGHT, framerate=$FRAMERATE/1 ! h264parse ! queue ! rtph264pay config-interval=10 pt=96 ! fakesink
-
-if [ $? != 0 ]; then
-    echo "Device is not capable of specified format, using device current settings instead"
-    bash -c "export LD_LIBRARY_PATH=/usr/local/lib/ && gst-launch-1.0 -v v4l2src device=$DEVICE do-timestamp=true ! video/x-h264 $gstOptions"
-else
-    echo "starting device $DEVICE with width $WIDTH height $HEIGHT framerate $FRAMERATE options $gstOptions"
+if [ "$IS_H264_USB" = "true" ]; then
+    v4l2-ctl --device $DEVICE --set-parm $FRAMERATE &>/dev/null
+    echo "Launching USB H.264 stream..."
     bash -c "export LD_LIBRARY_PATH=/usr/local/lib/ && gst-launch-1.0 -v v4l2src device=$DEVICE do-timestamp=true ! video/x-h264, width=$WIDTH, height=$HEIGHT, framerate=$FRAMERATE/1 $gstOptions"
-    # if we make it this far, it means the gst pipeline failed, so load the backup settings
-    cp ~/vidformat.param.bak ~/vidformat.param && rm ~/vidformat.param.bak
-fi
 
+elif [ "$USE_LIBCAMERA" = "true" ]; then
+    echo "Launching CSI camera stream with hardware H264 encoding..."
+    bash -c "export LD_LIBRARY_PATH=/usr/local/lib/ && gst-launch-1.0 -v libcamerasrc ! video/x-raw, width=$WIDTH, height=$HEIGHT, framerate=$FRAMERATE/1 ! v4l2h264enc extra-controls=\"controls,video_bitrate=4000000\" $gstOptions"
+
+else
+    echo "Warning: No optimized camera detected. Trying default v4l2src..."
+    bash -c "export LD_LIBRARY_PATH=/usr/local/lib/ && gst-launch-1.0 -v v4l2src device=$DEVICE do-timestamp=true ! video/x-h264, width=$WIDTH, height=$HEIGHT, framerate=$FRAMERATE/1 $gstOptions"
+fi
