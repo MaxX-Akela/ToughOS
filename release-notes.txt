@@ -1,0 +1,194 @@
+0.0.7:
+
+Initial release
+
+- Setup/configuration on port 2770
+- WiFi Setup
+- Flash Pixhawk
+- Companion updates
+- Communications routing
+- Raspberry Pi Camera configuration
+- Filesystem access on port 7777
+- Terminal access on port 8088
+
+0.0.8:
+
+- Various bugfixes
+- Don't include -roi option in camera configuration ui
+- Network diagnostics: bandwidth, latency
+- CPU and ram usage monitoring
+- Lockout functions requiring internet when not available
+- Git remote configuration
+- Support for NMEA sentence input on port 27000
+- Support for json-formatted gps input on port 25100
+- Support for Water Linked Underwater GPS system
+- Allow adjusting/saving camera configuration used at boot
+- Factory firmware and parameter reset
+- Change the default password from 'raspberry' to 'companion'
+
+0.0.9:
+
+- Bugfix for determining hardware type before expanding filesystem on first boot
+
+0.0.10:
+
+- Update post-sideload.sh for zipped updates
+
+0.0.11:
+
+- Add CPU load, RAM usage, and throttling status to /system page
+- Add password change functionality at /security
+- Output ROV heading to Water Linked system
+- Add support for RMC, GLL, and GNS NMEA sentences to USBL/GPS input parser
+- Add reboot pixhawk button on /system page
+- Move wifi setup to /network page
+- Display current wifi and ethernet IP addresses in /network page
+- Allow changing default static ip address on ethernet interface in /network page
+- Remove latency testing from /network page, it was unreliable
+- Auto-detect/auto-start Water Linked Underwater GPS driver
+- Bugfix some broken pages on Internet Explorer
+- Remove audio streaming easter egg from web interface, and stream audio via RTP on port 5601
+- Update default ArduSub firmware and parameters to 3.5.2
+- Add Mavproxy configuration to /mavproxy
+- New and improved camera configuration options. It is easy to select video source, framerate, resolution and all user-adjustable camera parameters.
+- Generic support for UVC-compliant, H.264 capable usb video cameras
+- Many various bugfixes and usability improvements
+
+0.0.12:
+
+- Bugfix broken select elements on camera page
+
+0.0.13:
+
+- Bugfix broken ArduSub firmware upload
+
+0.0.14:
+
+- Bugfix startup options for mavproxy
+
+0.0.15:
+
+- Add vlc.sdp
+- Update Water Linked driver
+
+0.0.16:
+
+- Disable periodic telemetry streamrate override in mavproxy default options
+- Add preliminary support for Blue Robotics Ping1D echosounder
+- Add advanced options toggle switch to header
+- Add DHCP options to /network page (advanced)
+- Add status of processes (screens) to /system page
+- Add detected devices to /system page
+- Add Companion software version information to header
+- Add ArduSub firmware version to /system page
+- Add system log download to /system page
+- Allow camera hotplugging
+- Allow pixhawk hotplugging
+- Allow microphone hotplugging
+- Add TCP support for NMEA receiver (nmearx)
+- Use Mavlink2 for default mavproxy options
+- Add bash alias to kill all screens at once (`stopscreens`)
+- Add log directory, persistent storage of all telemetry logs (via mavproxy --aircraft option)
+- Add environment variable logging to update scripts
+- Bugfix: permissions on update script logging
+- Bugfix: factory default parameter reset was broken
+- Bugfix: "undefined" appearing next to wifi status on /network page
+
+0.0.17:
+
+- Use 'fast.com' for internet status in order to support more regions (ex china)
+- Stash before hard reset during companion update process (hold user changes)
+- Add support for using Water Linked underwater GPS system with QGC v3.5.0 (nmea out to port 14401)
+- Add support for newer ardupilot firmwares (update usb device identifiers)
+- Update bluerobotics-ping python library to version 0.0.7
+- Update 'factory default' ardusub firmware to stable v3.5.4
+- Update download link for development firmware (.apj)
+- Updates to ping1d_mavlink_driver.py
+- Bugfix camera settings are not saved/loaded correctly
+
+0.0.18:
+
+- Fix download link for ardusub beta firmware
+- Fix underwater GPS bug when if no orientation data is received
+- Fix ping protocol installation issue
+- Update ping protocol to 0.0.9
+- Increase mavlink stream rate to 20Hz
+- Improve website visual feedback
+- Add Ping360 support
+- Add companion status in main page
+
+0.0.19:
+
+- Add MAVLink REST API under http://192.168.2.2:4777/mavlink
+- Add ping-viewer MAVLink output for ping360 orientation feature
+- Add reboot after companion system update step
+- Add Navigator board support
+- Enable Raspberry hardware I²C, SPI and Serial ports
+- Mavlink streamrate decreased to avoid high CPU usages
+- Fix problem related to underwater-gps loss of position
+- Fix bug when upgrading Ping devices
+
+0.0.20:
+- Fix URL used to fetch ArduSub from Ardupilot servers
+
+0.0.21:
+- Fix Ping1D not showing on QGC
+- Fix migration of mavproxy.params to support mavlink2rest and Ping-Viewer integration
+- Set mavproxy.params streamrate if not set
+- Fix Integration of Waterlinked Underwater GPS and ArduSub 4.0
+- Upgrade mavlink2rest to version 0.7.2
+
+0.0.22:
+- Add http-proxy for mavlink2rest API
+    - mavlink2rest can not be accessible under [http://192.168.2.2:2770/](http://192.168.2.2:2770/api/mavlink)
+- Add SoC temperature to /system page
+- Add Wi-fi service
+    - Fix list of available networks
+- Update udev rules from usb to tty
+- Update mavlink2rest to [0.7.3](https://github.com/patrickelectric/mavlink2rest/releases/tag/0.7.3)
+- Update bridges to [0.5.0](https://github.com/patrickelectric/bridges/releases/tag/0.5.0)
+- Drop ssh-agent/ssh support in /git page
+
+0.0.23:
+- Automatically configure autopilot to use mavlink2
+- Bugfix excessive disk space usage and mavproxy not starting when disk is full
+    - Delete existing logs in /home/pi/telemetry folder
+    - Store logs in temporary directory /tmp instead of pi user folder
+
+0.0.24:
+- Use 'Pixhawk1' firmware instead of 'fmuv2' for beta ardusub firmware update
+    - fmuv2 has 1M flash limitation and some features disabled
+- Bugfix do not attempt filesystem resize on every boot
+    - filesystem is expaneded once on first boot
+
+0.0.25:
+- Update default ArduSub firmware to 4.0.2
+- Update factory default parameters
+
+0.0.26:
+- Ping1D mavlink driver will automatically set autopilot RNGFND1_TYPE parameter to 'Mavlink'
+- Update default ArduSub firmware to 4.0.3
+- Remove unsupported 'upload companion update' option from the webui
+- Replace old px_uploader.py with new uploader.py for flashing autopilot firmware
+
+0.0.27:
+- bugfix mavlink2rest gcs heartbeat interference
+- bugfix broken wifi service (0.0.22 dependency installation)
+- various mavproxy configuration adjustments to reduce CPU usage
+
+0.0.28:
+- change default waterlinked underwater gps hostname from waterlinked.local to 192.168.2.94
+- use floats for underwater gps latitude and longitude
+- fix regression in 0.0.27: add mavproxy param module to force mavlink2 communication
+- ping1d mavlink driver: change default device measurement interval from 2Hz to 10Hz
+
+0.0.29:
+ - Switch to Raspbian Jessie legacy mirrors
+
+0.0.30:
+ - Disable ssl for firmware downloads from firmware.ardupilot.org
+
+0.0.31:
+- Merge Water Linked DVL-A50 functionality into main release
+- Stop the DVL service from sending invalid position messages, which ArduPilot erroneously consumes
+- Make DVL service communicate when rangefinder position lock lost
