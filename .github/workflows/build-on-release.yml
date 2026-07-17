@@ -29,6 +29,7 @@ jobs:
         image_additional_mb: 2500
         copy_repository_path: /home/pi/companion
         commands: |
+          systemctl disable userconfig
           if ! id -u pi >/dev/null 2>&1; then
               useradd -m -s /bin/bash pi
               echo "pi:raspberry" | chpasswd
