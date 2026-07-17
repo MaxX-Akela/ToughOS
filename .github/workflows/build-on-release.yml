@@ -24,14 +24,15 @@ jobs:
 
     - name: Download Raspberry Pi OS Bullseye Lite (32-bit armhf)
       run: |
-        wget -O pi_os.xz https://downloads.raspberrypi.com/raspios_lite_armhf/images/raspios_lite_armhf-2023-05-03/2023-05-03-raspios-bullseye-armhf-lite.img.xz
-        xz -d pi_os.xz
-        mv pi_os companion-rpi4.img
+        wget -O /tmp/pi_os.xz https://downloads.raspberrypi.com/raspios_lite_armhf/images/raspios_lite_armhf-2023-05-03/2023-05-03-raspios-bullseye-armhf-lite.img.xz
+        xz -d /tmp/pi_os.xz
+        mv /tmp/pi_os /tmp/companion-rpi4.img
 
     - name: Customize Image via QEMU (Manual Bootstrap)
       uses: pguyot/arm-runner-action@v2
       with:
-        image_path: companion-rpi4.img
+        base_image: /tmp/companion-rpi4.img
+        image_additional_mb: 2500
         copy_repository_path: /home/pi/companion
         commands: |
           if ! id -u pi >/dev/null 2>&1; then
@@ -82,7 +83,7 @@ jobs:
       run: |
         TAG_NAME="${{ github.event.release.tag_name }}"
         ZIP_NAME="companion-${TAG_NAME:-manual}.zip"
-        zip $ZIP_NAME companion-rpi4.img
+        zip $ZIP_NAME /tmp/companion-rpi4.img
         echo "ZIP_FILE_NAME=$ZIP_NAME" >> $GITHUB_ENV
 
     - name: Upload Image to GitHub Release
