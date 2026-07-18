@@ -29,16 +29,8 @@ jobs:
         image_additional_mb: 2500
         copy_repository_path: /home/pi/companion
         commands: |
-          systemctl disable userconfig
-          systemctl enable ssh
-          systemctl start ssh
-
-          if ! id -u pi >/dev/null 2>&1; then
-              useradd -m -s /bin/bash pi
-              echo "pi:raspberry" | chpasswd
-              usermod -aG sudo,video,plugdev pi
-              echo "pi ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/010_pi-nopasswd
-          fi
+          echo "pi:$(openssl passwd -6 raspberry)" > /boot/userconf.txt
+          touch /boot/ssh
 
           apt-get update
           apt-get install -y \
@@ -47,6 +39,7 @@ jobs:
             python3-setuptools \
             python-is-python3 \
             nodejs \
+            npm \
             git \
             gstreamer1.0-plugins-bad \
             gstreamer1.0-plugins-good \
@@ -55,10 +48,16 @@ jobs:
             v4l-utils \
             screen \
             iw \
-            i2c-tools
+            i2c-tools \
+            libasound2-dev
 
-          pip3 install tornado pyserial pymavlink MAVProxy netifaces pywifi bluerobotics-ping requests numpy
-          
+          pip3 install tornado pyserial pymavlink MAVProxy netifaces pywifi bluerobotics-ping requests numpy numpy
+
+          if [ -d "/home/pi/companion/br-webui" ]; then
+              cd /home/pi/companion/br-webui
+              npm install --unsafe-perm
+          fi
+
           echo "" >> /etc/dhcpcd.conf
           echo "interface eth0" >> /etc/dhcpcd.conf
           echo "static ip_address=192.168.2.2/24" >> /etc/dhcpcd.conf
@@ -71,6 +70,7 @@ jobs:
           fi
 
           echo "enable_uart=1" >> /boot/config.txt
+          echo "dtparam=i2c_arm=on" >> /boot/config.txt
           echo "camera_auto_detect=1" >> /boot/config.txt
 
           chown -R pi:pi /home/pi/companion
