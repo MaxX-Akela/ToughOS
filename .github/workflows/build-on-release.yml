@@ -55,7 +55,9 @@ jobs:
 
           if [ -d "/home/pi/companion/br-webui" ]; then
               cd /home/pi/companion/br-webui
-              npm install --unsafe-perm
+              npm install --unsafe-perm --ignore-scripts
+              
+              find node_modules/ -name "node-file-manager.sh" -exec chmod +x {} + 2>/dev/null || true
           fi
 
           echo "" >> /etc/dhcpcd.conf
