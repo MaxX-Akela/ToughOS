@@ -54,11 +54,6 @@ jobs:
 
           pip3 install tornado pyserial pymavlink MAVProxy netifaces pywifi bluerobotics-ping requests numpy numpy
 
-          if [ -d "/home/pi/companion/br-webui" ]; then
-                        cd /home/pi/companion/br-webui
-                        npm install --unsafe-perm --no-bin-links
-          fi
-
           echo "" >> /etc/dhcpcd.conf
           echo "interface eth0" >> /etc/dhcpcd.conf
           echo "static ip_address=192.168.2.2/24" >> /etc/dhcpcd.conf
