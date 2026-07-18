@@ -57,8 +57,7 @@ jobs:
             iw \
             i2c-tools
 
-          # Выбрали правильную полную строчку и убрали маркеры конфликта Git
-          pip3 install tornado pyserial pymavlink MAVProxy netifaces pywifi brping requests flask numpy
+          pip3 install tornado pyserial pymavlink MAVProxy netifaces pywifi bluerobotics-ping requests numpy
           
           echo "" >> /etc/dhcpcd.conf
           echo "interface eth0" >> /etc/dhcpcd.conf
